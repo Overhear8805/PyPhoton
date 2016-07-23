@@ -72,4 +72,4 @@ def upload_image(request, file_name):
     image = ImageEntity(hash=hash, file_name=new_file_name, mime=mime)
     image.save()
 
-    return JsonResponse({"hash":hash})
+    return JsonResponse({"sha1-hash":hash})
