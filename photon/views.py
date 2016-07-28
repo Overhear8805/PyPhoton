@@ -60,8 +60,8 @@ def get_image_by_hash(request, hash):
     else:
         raise Http404("No image with that hash exists")
 
-# POST image as raw body
-# /photon/api/vX.X/upload/<filename>.<file extention>/
+# POST image as multipart 
+# /photon/api/vX.X/upload/
 @csrf_exempt
 def upload_image(request):
     form = UploadFileForm(request.POST, request.FILES)
@@ -74,22 +74,7 @@ def upload_image(request):
         mime = mime_magic.from_file(MEDIA_DIR + new_file_name)
         image = ImageEntity(hash=hash, file_name=new_file_name, mime=mime)
         image.save()
+        return JsonResponse({"sha1-hash":hash})
     else:
         log.error("Form failed validation")
-        return HttpResponse(status=500)
-    
-
-
-    # --------------------------------------------------------------#
-    #new_file_name = file_storage.save(file_name, request)
-
-    #with open(MEDIA_DIR+new_file_name, 'rb') as f:
-    #    hash = hashlib.sha1(f.read()).hexdigest()
-
-    #mime = mime_magic.from_file(MEDIA_DIR + new_file_name)
-    #image = ImageEntity(hash=hash, file_name=new_file_name, mime=mime)
-    #image.save()
-
-    return JsonResponse({"sha1-hash":hash})
-
-
+        return HttpResponse(status=400)
