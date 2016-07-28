@@ -71,6 +71,9 @@ def upload_image(request):
 
         with open(MEDIA_DIR+new_file_name, 'rb') as f:
             hash = hashlib.sha1(f.read()).hexdigest()
+
+        if hash != form['hash']:
+            return HttpResponse(status=400)
     
         mime = mime_magic.from_file(MEDIA_DIR + new_file_name)
         image = ImageEntity(hash=form['hash'], file_name=new_file_name, mime=mime)
