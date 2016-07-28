@@ -64,15 +64,16 @@ def get_image_by_hash(request, hash):
 # /photon/api/vX.X/upload/
 @csrf_exempt
 def upload_image(request):
-    form = UploadFileForm(request.POST, request.FILES)
+    form =  ImageUploadForm(request.POST, request.FILES)
     if form.is_valid():
-        new_file_name = file_storage.save(form.file_name, request)
+        form = form.cleaned_data
+        new_file_name = file_storage.save(form['file_name'], form['file'])
 
         with open(MEDIA_DIR+new_file_name, 'rb') as f:
             hash = hashlib.sha1(f.read()).hexdigest()
     
         mime = mime_magic.from_file(MEDIA_DIR + new_file_name)
-        image = ImageEntity(hash=hash, file_name=new_file_name, mime=mime)
+        image = ImageEntity(hash=form['hash'], file_name=new_file_name, mime=mime)
         image.save()
         return JsonResponse({"sha1-hash":hash})
     else:
